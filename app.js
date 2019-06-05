@@ -40,8 +40,6 @@ let cronJobs=require('./crons/bboxxcron');
 // cronJobs.identifyDaysWithoutRecords.start();
 // cronJobs.downloadMissingData.start();
 
-cronJobs.ct();
-
 // const CronJob = require('cron').CronJob;
 // const exec = require('child_process').exec;
 

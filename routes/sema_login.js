@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
 
 		// Everything went well
 
-		let kioskUser= await kiosk_user.find({
+		let kioskUser= await kiosk_user.findAll({
 			where:{user_id:user.id},
 		});
 

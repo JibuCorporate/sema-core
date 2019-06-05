@@ -142,7 +142,7 @@ router.put('/:id', async (req, res) => {
 
 		productMrps.map(async mrp => {
 			if (mrp.id) {
-				let updateMrp = await db.product_mrp.find({
+				let updateMrp = await db.product_mrp.findne({
 					where: { id: mrp.id }
 				});
 				omit(mrp, 'id');
