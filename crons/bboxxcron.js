@@ -118,7 +118,7 @@ insertPulsesToDB = async (imei, pulses) => {
 	pulses = JSON.parse(pulses);
 	pulses = pulses.data.pulse_count;
 	if (pulses) {
-		await pulses.forEach(async (pulse, i) => {
+		for (const pulse of pulses) {
 			let parts = pulse;
 			if (parts[0] > 0) {
 				let reading = {
@@ -128,7 +128,7 @@ insertPulsesToDB = async (imei, pulses) => {
 				};
 				await kiosk_panel_readings.create(reading);
 			}
-		});
+		}
 	}
 };
 
@@ -139,95 +139,6 @@ wait = milleseconds => {
 print = value => {
 	console.log(value);
 };
-
-
-
-
-
-// updateDailyProduction = () => {
-// 	//1. First step is to read kiosk ids in the kiosk panel
-// 	let query = `select kiosk_id from kiosk_panel`;
-// 	__pool.getConnection((err, connection) => {
-// 		connection.query(query, (err, kioskIds) => {
-// 			connection.release();
-// 			if (err) {
-// 				semaLog.error('GET PANEL KIOSKS  - failed', { err });
-// 			} else {
-// 				kioskIds.forEach((id, e) => {
-// 					let checkQuery = `select day_date as day, production from kiosk_daily_production where kiosk_id=${
-// 						id.kiosk_id
-// 					} order by day_date desc limit 1`;
-// 					//2. Get The last production entered for a given kiosk
-// 					__pool.getConnection((err, connection) => {
-// 						connection.query(checkQuery, (err, kioskLastEntry) => {
-// 							connection.release();
-
-// 							if (kioskLastEntry) {
-// 								semaLog.info(
-// 									`FILTER RESULT FOR ${id.kiosk_id} `,
-// 									kioskLastEntry
-// 								);
-// 								let pulseData = kioskLastEntry[0];
-
-// 								let kioskPulsesQuery = `select max(r.pulse) as pulse, date(r.pulse_record_time) as day from kiosk_panel_readings r join kiosk_panel k on r.panel_imei=k.imei where k.kiosk_id=${
-// 									id.kiosk_id
-// 								} group by kiosk_id, day`;
-
-// 								if (kioskLastEntry.length > 0) {
-// 									kioskPulsesQuery = `select max(r.pulse) as pulse, date(r.pulse_record_time) as day from kiosk_panel_readings r join kiosk_panel k on r.panel_imei=k.imei  where k.kiosk_id=${
-// 										id.kiosk_id
-// 									} and r.pulse_record_time >= '${pulseData.day.toISOString()}' group by kiosk_id, day`;
-// 								}
-
-// 								//3. Read kiosk pulses
-// 								__pool.getConnection((err, connection) => {
-// 									connection.query(
-// 										kioskPulsesQuery,
-// 										(err, result) => {
-// 											connection.release();
-// 											if (!err) {
-// 												let pulses = [...result];
-// 												let currentProd =
-// 													kioskLastEntry.length > 0
-// 														? pulseData.production
-// 														: 0;
-
-// 												pulses.forEach((e, i) => {
-// 													let prod = {
-// 														kiosk_id: id.kiosk_id,
-// 														day_date: e.day,
-// 														production:
-// 															e.pulse -
-// 															currentProd,
-// 														cumulative_meter_adjustment: 0,
-// 														water_meter_reading:
-// 															e.pulse -
-// 															currentProd,
-// 														cumulative_billing_adjustment: 0,
-// 														billable_production:
-// 															e.pulse -
-// 															currentProd
-// 													};
-
-// 													currentProd =
-// 														e.pulse - currentProd;
-// 													//4. Insert daily production into kiosk_daily_production
-// 													try {
-// 														dProd.create(prod);
-// 													} catch (error) {}
-// 												});
-// 											}
-// 										}
-// 									);
-// 								});
-// 							}
-// 						});
-// 					});
-// 				});
-// 			}
-// 		});
-// 	});
-// };
 
 getPanelKioskIds = async () => {
 	let query = `select kiosk_id from kiosk_panel`;
@@ -271,7 +182,7 @@ updateDailyProduction = async () => {
 	//1. Get all Kiosk Ids
 	let kioskIds = await getPanelKioskIds();
 
-	kioskIds.forEach(async k => {
+	for (const k of kioskIds) {
 		let kioskId = k.kiosk_id;
 		//2. For each kiosk get last known update
 		let lastProductionEntry = await getKioskLastProductionEntry(kioskId);
@@ -285,10 +196,7 @@ updateDailyProduction = async () => {
 		//2.2 Update daily production
 		let cumul = lastProductionEntry.cumul;
 
-		// for(let i=0;i<lastReadings.length;i++){
-		// 	let r=lastReadings[i]
-		// }
-		lastReadings.forEach(r => {
+		for (const r of lastReadings) {
 			let prod = {
 				kiosk_id: kioskId,
 				day_date: r.day,
@@ -305,9 +213,8 @@ updateDailyProduction = async () => {
 			try {
 				dProd.create(prod);
 			} catch (error) {}
-
-		});
-	});
+		}
+	}
 };
 
 ct = async () => {
@@ -422,8 +329,7 @@ getMissingData = async () => {
 							let list = await getDaysWithMissingDate(imei);
 
 							if (list) {
-								list.forEach(async (e, i) => {
-									await wait(5000);
+								for (const e of list) {
 									let start = e.date;
 									let end = addDays(1, start);
 
@@ -435,7 +341,7 @@ getMissingData = async () => {
 										end,
 										e.id
 									);
-								});
+								}
 							}
 						}
 					} catch (error) {
@@ -514,7 +420,9 @@ productionUpdateHelper = async (query, kioskId, date) => {
 		}
 	});
 
-	let previousValue = previousUpdate ? previousUpdate.cumulative_production : 0;
+	let previousValue = previousUpdate
+		? previousUpdate.cumulative_production
+		: 0;
 
 	__pool.getConnection((err, connection) => {
 		connection.query(query, (err, result) => {
@@ -522,7 +430,7 @@ productionUpdateHelper = async (query, kioskId, date) => {
 			if (!err) {
 				let pulses = [...result];
 
-				pulses.forEach((e, i) => {
+				for (const e of pulses) {
 					let prod = {
 						kiosk_id: id.kiosk_id,
 						day_date: e.day,
@@ -534,14 +442,14 @@ productionUpdateHelper = async (query, kioskId, date) => {
 						billable_production: e.pulse - previousValue
 					};
 
-					previousValue=e.pulse
+					previousValue = e.pulse;
 					//4. Insert daily production into kiosk_daily_production
 					try {
 						dProd.create(prod).then(p => {
 							console.log(p);
 						});
 					} catch (error) {}
-				});
+				}
 			}
 		});
 	});

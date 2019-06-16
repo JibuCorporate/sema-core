@@ -6,7 +6,7 @@ let auditTrail = require('../models').kiosk_production_audit_trail;
 const semaLog = require(`${__basedir}/seama_services/sema_logger`);
 router.get('/', function(req, res) {
 
-	let query='select p.id, kiosk_id,k.name "kioskName", day_date "date", production "dailyProduction", cumulative_meter_adjustment, water_meter_reading "dailyWaterMeter", cumulative_billing_adjustment, billable_production "dailyBillableProduction",cumulative_production "cumulativeProduction" from kiosk_daily_production p join kiosk k on p.kiosk_id=k.id';
+	let query='select p.id, kiosk_id,k.name "kioskName", DATE_FORMAT(day_date, "%Y-%m-%d") "date", production "dailyProduction",cumulative_production "cumulativeProduction", cumulative_meter_adjustment, water_meter_reading "dailyWaterMeter", cumulative_billing_adjustment, billable_production "dailyBillableProduction" from kiosk_daily_production p join kiosk k on p.kiosk_id=k.id';
 
 	if(req.query.date){
 		console.log(req.query.date);
@@ -53,13 +53,12 @@ router.put('/', function(req, res) {
 		}
 	}).then(list=>{
 		let count=0;
-		list.forEach(async (e,i)=>{
+		for( const e of list){
 			let entry={
-				cumulative_meter_adjustment:meterAdjustment,
+				cumulative_meter_adjustment:(meterAdjustment+e.cumulative_meter_adjustment),
 				water_meter_reading:(e.production+meterAdjustment),
-				cumulative_billing_adjustment:billingAdjustment,
+				cumulative_billing_adjustment:(billingAdjustment+e.cumulative_billing_adjustment),
 				billable_production:(e.production+meterAdjustment+billingAdjustment)
-
 			}
 
 			let auditTrailEntry={
@@ -83,17 +82,13 @@ router.put('/', function(req, res) {
 				console.log("Audit Trail" +e);
 			});
 			count++;
-		});
+		}
 
 		res.send({
 			status:"UPDATED",
 			changed:count
 		})
 	});
-
-
 });
-
-
 
 module.exports = router;
