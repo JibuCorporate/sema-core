@@ -39,8 +39,8 @@ const sqlGetCustomerById = 'SELECT * FROM customer_account WHERE id = ?';
 const sqlInsertCustomer =
 	'INSERT INTO customer_account ' +
 	'(id, created_at, name, customer_type_id, sales_channel_id, kiosk_id, ' +
-	'due_amount, address_line1, gps_coordinates, phone_number, active ) ' +
-	'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+	'due_amount, address_line1, gps_coordinates, phone_number, active, second_phone_number ) ' +
+	'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
 // const sqlUpdateCustomers = 	"UPDATE customer_account " +
 // 	"SET name = ?, sales_channel_id = ?, customer_type_id = ?," +
@@ -256,7 +256,8 @@ router.post('/', async (req, res) => {
 				customer.address,
 				customer.gpsCoordinates,
 				customer.phoneNumber,
-				1
+				1,
+				customer.secondPhoneNumber
 			];
 
 			insertCustomers(customer, sqlInsertCustomer, postSqlParams, res);

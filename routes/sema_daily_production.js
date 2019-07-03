@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
 let dProd = require('../models').kiosk_daily_production;
 let auditTrail = require('../models').kiosk_production_audit_trail;
@@ -6,13 +7,19 @@ let auditTrail = require('../models').kiosk_production_audit_trail;
 const semaLog = require(`${__basedir}/seama_services/sema_logger`);
 router.get('/', function(req, res) {
 
+	let date= new Date();
+	date=date.addDays(-30);
+	date = moment(date)
+				.format('YYYY-MM-DD');
+
 	let query='select p.id, kiosk_id,k.name "kioskName", DATE_FORMAT(day_date, "%Y-%m-%d") "date", production "dailyProduction",cumulative_production "cumulativeProduction", cumulative_meter_adjustment, water_meter_reading "dailyWaterMeter", cumulative_billing_adjustment, billable_production "dailyBillableProduction" from kiosk_daily_production p join kiosk k on p.kiosk_id=k.id';
 
 	if(req.query.date){
-		console.log(req.query.date);
 		let date=req.query.date;
 		query+=" where p.day_date>='"+req.query.date+"'";
-	};
+	}else{
+		query+=` where p.day_date>='${date}'`;
+	}
 	query+=" order by day_date desc, kioskName"
 
 	console.log(query)

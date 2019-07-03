@@ -17,6 +17,7 @@ class Customer {
 		this._gpsCoordinates = '';
 		this._siteId = -1;
 		this._phoneNumber = '';
+		this._secondPhoneNumber='';
 		this._createdDate = null;
 		this._updatedDate = null;
 		this._gender = null;
@@ -35,6 +36,7 @@ class Customer {
 		this._name = res['name'];
 		this._customerTypeId = res['customer_type_id'];
 		this._salesChannelId = res['sales_channel_id'];
+		this._secondPhoneNumber = res['second_phone_number'];
 		this._siteId = res['kiosk_id'];
 		this._dueAmount = res['due_amount'];
 		if (this._dueAmount === null) {
@@ -61,6 +63,10 @@ class Customer {
 
 		this._frequency = req.body['frequency'];
 		this._reminder_date = req.body['reminder_date'];
+
+		if (req.body.hasOwnProperty('secondPhoneNumber')) {
+			this._secondPhoneNumber = req.body['secondPhoneNumber'];
+		}
 
 		if (req.body.hasOwnProperty('customerId')) {
 			this._customerId = req.body['customerId'];
@@ -99,6 +105,7 @@ class Customer {
 			this._dueAmount = 0;
 		}
 	}
+	
 	updateClass(requestCustomer) {
 		if (requestCustomer.hasOwnProperty('address'))
 			this._address = requestCustomer.address;
@@ -111,6 +118,9 @@ class Customer {
 
 		if (requestCustomer.hasOwnProperty('phoneNumber'))
 			this._phoneNumber = requestCustomer.phoneNumber;
+
+		if (requestCustomer.hasOwnProperty('secondPhoneNumber'))
+			this._secondPhoneNumber = requestCustomer.secondPhoneNumber;
 
 		if (requestCustomer.hasOwnProperty('updatedDate')) {
 			this._updatedDate = new Date(requestCustomer.updatedDate);
@@ -136,6 +146,10 @@ class Customer {
 		if (requestCustomer['reminder_date']) {
 			this._reminder_date = requestCustomer['reminder_date'];
 		}
+
+		if (requestCustomer['secondPhoneNumber']) {
+			this._secondPhoneNumber = requestCustomer['secondPhoneNumber'];
+		}
 	}
 	classToPlain() {
 		return {
@@ -152,7 +166,8 @@ class Customer {
 			phoneNumber: this._phoneNumber,
 			dueAmount: this._dueAmount,
 			reminder_date : this._reminder_date,
-			frequency: this._frequency
+			frequency: this._frequency,
+			secondPhoneNumber:this._secondPhoneNumber
 		};
 	}
 
@@ -194,6 +209,9 @@ class Customer {
 	}
 	get reminder_date(){
 		return this._reminder_date;
+	}
+	get secondPhoneNumber(){
+		return this._secondPhoneNumber;
 	}
 }
 

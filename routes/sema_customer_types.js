@@ -10,7 +10,8 @@ router.get('/', function(req, res) {
 			console.log("WTF: "+ err);
 			return ;
 		}
-		connection.query('SELECT * FROM customer_type', (err, result ) => {
+		//connection.query('SELECT * FROM customer_type', (err, result ) => {
+		connection.query('select c.id, c.name, c.description, sales_channel_id, s.name as sales_channel_name from customer_type c left join sales_channel s on c.sales_channel_id=s.id', (err, result ) => {
 			connection.release();
 
 			if (err) {

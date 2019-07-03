@@ -26,6 +26,10 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING(255),
 			allowNull: false
 		},
+		sales_channel_id: {
+			type: DataTypes.BIGINT,
+			allowNull: true
+		},
 		active: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,

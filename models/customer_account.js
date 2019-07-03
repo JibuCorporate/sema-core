@@ -82,6 +82,10 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING(255),
 			allowNull: false
 		},
+		second_phone_number: {
+			type: DataTypes.STRING(255),
+			allowNull: true
+		},
 		notes: {
 			type: DataTypes.STRING(255),
 			allowNull: true
