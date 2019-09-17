@@ -31,10 +31,24 @@ var sema_units = require('./routes/sema_units');
 var sema_water_chart = require('./routes/sema_water_chart');
 var sema_water_summary = require('./routes/sema_water_summary');
 var sema_data_export = require('./routes/sema_data_export');
-let sema_kiosk_user=require('./routes/sema_kiosk_user');
+let sema_kiosk_user = require('./routes/sema_kiosk_user');
 var sema_reminders = require('./routes/sema_reminders');
-let sema_daily_production=require('./routes/sema_daily_production');
-let cronJobs=require('./crons/bboxxcron');
+let sema_daily_production = require('./routes/sema_daily_production');
+
+var sema_customer_credit = require('./routes/sema_customer_credit');
+let sema_customer_debt = require('./routes/sema_customer_debt');
+let sema_promotion = require('./routes/sema_promotion');
+var sema_customer_reminders = require('./routes/sema_customer_reminders');
+let sema_kiosk_closing_stock = require('./routes/sema_kiosk_closing_stock');
+
+var sema_meter_reading = require('./routes/sema_meter_reading');
+let sema_payment_type = require('./routes/sema_payment_type');
+var sema_pricing = require('./routes/sema_pricing');
+let sema_pricing_scheme = require('./routes/sema_pricing_scheme');
+var sema_receipt_payment_type = require('./routes/sema_receipt_payment_type');
+let sema_region_pricing = require('./routes/sema_region_pricing');
+
+let cronJobs = require('./crons/bboxxcron');
 
 // const CronJob = require('cron').CronJob;
 // const exec = require('child_process').exec;
@@ -44,7 +58,7 @@ let cronJobs=require('./crons/bboxxcron');
 fs.access('./iotile.conf.json', err => {
 	if (err) return;
 
-	const job = new CronJob('0 */10 * * * *', function() {
+	const job = new CronJob('0 */10 * * * *', function () {
 		console.log('SYNCING IOTILE DATA')
 		exec('node iotile_sync.js',
 			function (error, stdout, stderr) {
@@ -114,7 +128,7 @@ app.use('/untapped/sales', isAuthenticated, sema_sales);
 app.use('/untapped/sales-by-channel', isAuthenticated, sema_sales_by_channel);
 
 app.use('/sema/health-check', seama_health_check);
-app.use('/sema/kiosk_users',sema_kiosk_user);
+app.use('/sema/kiosk_users', sema_kiosk_user);
 app.use('/sema/login', seama_login);
 app.use('/sema/daily_production', sema_daily_production);
 app.use('/sema/kiosks', isAuthenticated, seama_kiosks);
@@ -136,7 +150,22 @@ app.use('/sema/data-export', isAuthenticated, sema_data_export);
 
 app.use('/sema/users', isAuthenticated, sema_users);
 app.use('/sema/admin/products', isAuthenticated, sema_admin_products);
-app.use('/sema/reminders',sema_reminders);
+app.use('/sema/reminders', sema_reminders);
+
+
+ app.use('/sema/meter_reading/', sema_meter_reading);
+ app.use('/sema/promotion/', sema_promotion);
+ app.use('/sema/sema_pricing/', sema_pricing); 
+ app.use('/sema/region_pricing/', sema_region_pricing);
+app.use('/sema/kiosk_closing_stock/', sema_kiosk_closing_stock);
+
+app.use('/sema/customer_credit/', sema_customer_credit);
+app.use('/sema/customer_debt/', sema_customer_debt);
+app.use('/sema/payment_type/', sema_receipt_payment_type);
+app.use('/sema/customer_reminders/', sema_customer_reminders);
+app.use('/sema/payment_type/', sema_payment_type);
+app.use('/sema/pricing_scheme/', sema_pricing_scheme);
+
 
 app.use(
 	'/sema/api/product-categories',
@@ -146,14 +175,14 @@ app.use(
 app.use('/sema/api/sales-channel', isAuthenticated, sema_admin_sales_channel);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
 	next(err);
 });
 
 // error handler
-app.use(function(err, req, res) {
+app.use(function (err, req, res) {
 	// set locals, only providing error in development
 	res.locals.message = err.message;
 	res.locals.error = req.app.get('env') === 'development' ? err : {};
