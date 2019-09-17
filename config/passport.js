@@ -8,7 +8,7 @@ module.exports = () => {
 	const opts = {};
 
 	opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-	opts.secretOrKey = 'SEMA';
+	opts.secretOrKey = process.env.JWT_SECRET;
 
 	passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
 		User

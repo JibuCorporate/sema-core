@@ -35,7 +35,6 @@ let sema_kiosk_user=require('./routes/sema_kiosk_user');
 var sema_reminders = require('./routes/sema_reminders');
 let sema_daily_production=require('./routes/sema_daily_production');
 let cronJobs=require('./crons/bboxxcron');
-  
 
 // const CronJob = require('cron').CronJob;
 // const exec = require('child_process').exec;
