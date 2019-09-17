@@ -2,10 +2,11 @@ module.exports = {
 	development: {
 		username: process.env.DB_USER || 'root', // for sequelize
 		user: process.env.DB_USER || 'root', // for mysql
-		password: process.env.DB_PASSWORD || null,
-		database: process.env.DB_SCHEMA || 'sema_dev',
+		password: process.env.DB_PASSWORD || '',
+		database: process.env.DB_SCHEMA || 'sema_core',
 		host: process.env.DB_HOST || '127.0.0.1',
-		dialect: process.env.DB_DIALECT || 'mysql'
+		dialect: process.env.DB_DIALECT || 'mysql',
+		JWT_SECRET: process.env.DB_DIALECT || 'sema',
 	},
 	test: {
 		username: process.env.DB_USER || 'root', // for sequelize
